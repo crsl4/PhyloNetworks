@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Extract Expected CFs · PhyloNetworks.jl</title><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.11.1/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><a class="docs-logo" href="../../"><img src="../../assets/logo.png" alt="PhyloNetworks.jl logo"/></a><div class="docs-package-name"><span class="docs-autofit">PhyloNetworks.jl</span></div><form class="docs-search" action="../../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../../">Home</a></li><li><span class="tocitem">Manual</span><ul><li><a class="tocitem" href="../installation/">Installation</a></li><li><a class="tocitem" href="../inputdata/">Input Data for SNaQ</a></li><li><a class="tocitem" href="../ticr_howtogetQuartetCFs/">TICR pipeline</a></li><li><a class="tocitem" href="../snaq_plot/">Network estimation and display</a></li><li><a class="tocitem" href="../dist_reroot/">Network comparison and manipulation</a></li><li><a class="tocitem" href="../fixednetworkoptim/">Candidate Networks</a></li><li class="is-active"><a class="tocitem" href>Extract Expected CFs</a></li><li><a class="tocitem" href="../bootstrap/">Bootstrap</a></li><li><a class="tocitem" href="../multiplealleles/">Multiple Alleles</a></li><li><a class="tocitem" href="../trait_tree/">Continuous Trait Evolution</a></li><li><a class="tocitem" href="../parsimony/">Parsimony on networks</a></li><li><a class="tocitem" href="../fitDiscrete/">Discrete Trait Evolution</a></li><li><a class="tocitem" href="../nj/">Neighbour Joining</a></li></ul></li><li><span class="tocitem">Library</span><ul><li><a class="tocitem" href="../../lib/public/">Public</a></li><li><a class="tocitem" href="../../lib/internals/">Internals</a></li></ul></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">Manual</a></li><li class="is-active"><a href>Extract Expected CFs</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Extract Expected CFs</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/crsl4/PhyloNetworks.jl/blob/master/docs/src/man/expectedCFs.md" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="Extract-Expected-CFs"><a class="docs-heading-anchor" href="#Extract-Expected-CFs">Extract Expected CFs</a><a id="Extract-Expected-CFs-1"></a><a class="docs-heading-anchor-permalink" href="#Extract-Expected-CFs" title="Permalink"></a></h1><p>A good way to visualize the &quot;goodness-of-fit&quot; of a given estimated network to the data is to plot the observed CF versus the expected CF. If the network is a good fit, then the dots in the plot will be close to the diagonal (x=y line). The following function will create a dataframe with the observed and expected CFs, which are all saved in the DataCF object after running snaq:</p><pre><code class="language-julia-repl">julia&gt; topologyMaxQPseudolik!(truenet, raxmlCF);
+
+julia&gt; df_wide = fittedQuartetCF(raxmlCF) # same as fittedQuartetCF(raxmlCF, :wide)
+15×10 DataFrame
+ Row │ tx1     tx2     tx3     tx4     obsCF12   obsCF13    obsCF14    expCF12 ⋯
+     │ String  String  String  String  Float64   Float64    Float64    Float64 ⋯
+─────┼──────────────────────────────────────────────────────────────────────────
+   1 │ A       B       C       D       1.0       0.0        0.0        0.99997 ⋯
+   2 │ A       B       C       E       0.833333  0.0333333  0.133333   0.83412
+   3 │ A       B       D       E       0.833333  0.0333333  0.133333   0.83412
+   4 │ A       C       D       E       0.0       0.0        1.0        7.11328
+   5 │ B       C       D       E       0.0       0.0        1.0        7.11328 ⋯
+   6 │ A       B       C       O       0.866667  0.0        0.133333   0.85914
+   7 │ A       B       D       O       0.866667  0.0        0.133333   0.85914
+   8 │ A       C       D       O       0.0       0.0        1.0        7.70934
+   9 │ B       C       D       O       0.0       0.0        1.0        7.70934 ⋯
+  10 │ A       B       E       O       0.833333  0.0666667  0.1        0.84378
+  11 │ A       C       E       O       0.533333  0.333333   0.133333   0.59810
+  12 │ B       C       E       O       0.666667  0.266667   0.0666667  0.59810
+  13 │ A       D       E       O       0.533333  0.333333   0.133333   0.59810 ⋯
+  14 │ B       D       E       O       0.666667  0.266667   0.0666667  0.59810
+  15 │ C       D       E       O       1.0       0.0        0.0        0.99994
+                                                               3 columns omitted
+
+julia&gt; df_long = fittedQuartetCF(raxmlCF, :long)
+45×7 DataFrame
+ Row │ tx1     tx2     tx3     tx4     quartet  obsCF      expCF
+     │ String  String  String  String  String   Float64    Float64
+─────┼────────────────────────────────────────────────────────────────
+   1 │ A       B       C       D       12_34    1.0        0.99997
+   2 │ A       B       C       D       13_24    0.0        1.51333e-5
+   3 │ A       B       C       D       14_23    0.0        1.51333e-5
+   4 │ A       B       C       E       12_34    0.833333   0.834121
+   5 │ A       B       C       E       13_24    0.0333333  0.0829396
+   6 │ A       B       C       E       14_23    0.133333   0.0829396
+   7 │ A       B       D       E       12_34    0.833333   0.834121
+   8 │ A       B       D       E       13_24    0.0333333  0.0829396
+  ⋮  │   ⋮       ⋮       ⋮       ⋮        ⋮         ⋮          ⋮
+  39 │ A       D       E       O       14_23    0.133333   0.0999508
+  40 │ B       D       E       O       12_34    0.666667   0.598109
+  41 │ B       D       E       O       13_24    0.266667   0.30194
+  42 │ B       D       E       O       14_23    0.0666667  0.0999508
+  43 │ C       D       E       O       12_34    1.0        0.999941
+  44 │ C       D       E       O       13_24    0.0        2.95099e-5
+  45 │ C       D       E       O       14_23    0.0        2.95099e-5
+                                                       30 rows omitted</code></pre><p>It is important to have run <code>snaq!</code>, <code>topologyQPseudolik!</code> or <code>topologyMaxQPseudolik!</code> before making these tables, or the result would be meaningless. These functions update the fitted concordance factors (those expected under the network) inside the DataCF object <code>raxmlCF</code>.</p><p>Here is one way to plot them, via R again, and using the R package <code>ggplot2</code>.</p><pre><code class="language-julia">using RCall</code></pre><p>To install ggplot2 if not installed already, do: <code>R&quot;install.packages(&#39;ggplot2&#39;, dep=TRUE)&quot;</code></p><pre><code class="language-julia">@rlibrary ggplot2
+ggplot(df_long, aes(x=:obsCF,y=:expCF)) + theme_classic() +
+    geom_segment(x=0,y=0,xend=1,yend=1, color=&quot;#008080&quot;, size=0.3) + # diagonal line
+    geom_point(alpha=0.5, color=&quot;#008080&quot;, position=position_jitter(width=0.005, height=0.005)) +
+    ylab(&quot;quartet CF expected from network&quot;) + xlab(&quot;quartet CF observed in gene trees&quot;) + coord_equal(ratio=1);
+# if needed, save with:
+ggsave(&quot;expCFs_obsvsfitted.svg&quot;, scale=1, width=6, height=5);</code></pre><p><img src="../../assets/figures/expCFs_obsvsfitted.svg" alt="obsvsfitted"/></p><p>Many points are overlapping, so they were &quot;jittered&quot; a little to see them all better. There are always many points overlapping on the bottom-left corner: concordance factors of 0.0 for quartet resolutions not observed, and not expected.   To export the table of quartet CFs and explore the fit of the network with other tools:</p><pre><code class="language-julia">using CSV
+CSV.write(&quot;fittedCF.csv&quot;, df_long)</code></pre><p>alternative code to get a similar plot with <a href="http://gadflyjl.org/">Gadfly</a>:</p><pre><code class="language-julia">using Gadfly
+plot(layer(df_long, Geom.point, x=&quot;obsCF&quot;, y=&quot;expCF&quot;),
+     layer(x=0:1,y=0:1, Geom.line), # diagonal line
+     Guide.xlabel(&quot;CF observed in gene trees&quot;), Guide.ylabel(&quot;CF expected from network&quot;))</code></pre><p>We could highlight quartets that include taxon A, say, if we suspect that it is an unrecognized hybrid. Many points are overlapping, like before, so they are again &quot;jittered&quot; a bit.</p><pre><code class="language-julia">using DataFrames
+df_long[!,:has_A] .= &quot;no&quot;; # add a column to our data, to indicate which 4-taxon sets have A or not
+for r in eachrow(df_long)
+    if &quot;A&quot; ∈ [r[:tx1], r[:tx2], r[:tx3], r[:tx4]]
+       r[:has_A]=&quot;yes&quot;
+    end
+end</code></pre><pre><code class="language-julia-repl">julia&gt; first(df_long, 7) # first 7 rows
+7×8 DataFrame
+ Row │ tx1     tx2     tx3     tx4     quartet  obsCF      expCF       has_A
+     │ String  String  String  String  String   Float64    Float64     String
+─────┼────────────────────────────────────────────────────────────────────────
+   1 │ A       B       C       D       12_34    1.0        0.99997     yes
+   2 │ A       B       C       D       13_24    0.0        1.51333e-5  yes
+   3 │ A       B       C       D       14_23    0.0        1.51333e-5  yes
+   4 │ A       B       C       E       12_34    0.833333   0.834121    yes
+   5 │ A       B       C       E       13_24    0.0333333  0.0829396   yes
+   6 │ A       B       C       E       14_23    0.133333   0.0829396   yes
+   7 │ A       B       D       E       12_34    0.833333   0.834121    yes</code></pre><pre><code class="language-julia">ggplot(df_long, aes(x=:obsCF, y=:expCF, color=:has_A)) + theme_classic() +
+    geom_segment(x=0,y=0,xend=1,yend=1, color=&quot;black&quot;, size=0.3) + # diagonal line
+    geom_point(alpha=0.5, position=position_jitter(width=0.005, height=0.005)) +
+    ylab(&quot;quartet CF expected from network&quot;) + xlab(&quot;quartet CF observed in gene trees&quot;) + coord_equal(ratio=1);
+# can be saved:
+ggsave(&quot;expCFs_obsvsfitted_A.svg&quot;, width=6, height=5);</code></pre><p><img src="../../assets/figures/expCFs_obsvsfitted_A.svg" alt="obsvsfitted A present or not"/></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../fixednetworkoptim/">« Candidate Networks</a><a class="docs-footer-nextpage" href="../bootstrap/">Bootstrap »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Friday 12 March 2021 22:49">Friday 12 March 2021</span>. Using Julia version 1.5.3.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
