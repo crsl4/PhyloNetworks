@@ -28,6 +28,7 @@ makedocs(
             "Parsimony on networks" => "man/parsimony.md",
             "Discrete Trait Evolution" => "man/fitDiscrete.md",
             "Neighbour Joining" => "man/nj.md",
+            "Networks from Concatenated DNA with PhyLiNC" => "man/phyLiNC.md",
         ],
         "Library" => [
             "Public" => "lib/public.md",

@@ -141,4 +141,5 @@ maxParsimonyNet
 nstates
 stationary
 empiricalDNAfrequencies
+phyLiNC
 ```
