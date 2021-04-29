@@ -1,0 +1,14 @@
+data consists of 30 gene trees and 15 4-taxon subsets
+
+ same taxa in gene trees and quartets: ["A", "B", "C", "D", "E", "O"]
+Taxon A appears in 30 input trees (100.0 %)
+Taxon B appears in 30 input trees (100.0 %)
+Taxon C appears in 30 input trees (100.0 %)
+Taxon D appears in 30 input trees (100.0 %)
+Taxon E appears in 30 input trees (100.0 %)
+Taxon O appears in 30 input trees (100.0 %)
+----------------------------
+
+will print below only the 4-taxon subsets with data from <= 70.0% genes
+----------------------------
+

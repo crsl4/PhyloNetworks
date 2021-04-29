@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Discrete Trait Evolution · PhyloNetworks.jl</title><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.11.1/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><a class="docs-logo" href="../../"><img src="../../assets/logo.png" alt="PhyloNetworks.jl logo"/></a><div class="docs-package-name"><span class="docs-autofit">PhyloNetworks.jl</span></div><form class="docs-search" action="../../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../../">Home</a></li><li><span class="tocitem">Manual</span><ul><li><a class="tocitem" href="../installation/">Installation</a></li><li><a class="tocitem" href="../inputdata/">Input Data for SNaQ</a></li><li><a class="tocitem" href="../ticr_howtogetQuartetCFs/">TICR pipeline</a></li><li><a class="tocitem" href="../snaq_plot/">Network estimation and display</a></li><li><a class="tocitem" href="../dist_reroot/">Network comparison and manipulation</a></li><li><a class="tocitem" href="../fixednetworkoptim/">Candidate Networks</a></li><li><a class="tocitem" href="../expectedCFs/">Extract Expected CFs</a></li><li><a class="tocitem" href="../bootstrap/">Bootstrap</a></li><li><a class="tocitem" href="../multiplealleles/">Multiple Alleles</a></li><li><a class="tocitem" href="../trait_tree/">Continuous Trait Evolution</a></li><li><a class="tocitem" href="../parsimony/">Parsimony on networks</a></li><li class="is-active"><a class="tocitem" href>Discrete Trait Evolution</a><ul class="internal"><li><a class="tocitem" href="#Discrete-trait-data"><span>Discrete trait data</span></a></li><li><a class="tocitem" href="#Substitution-models"><span>Substitution models</span></a></li><li><a class="tocitem" href="#Inference"><span>Inference</span></a></li><li><a class="tocitem" href="#Trait-simulation"><span>Trait simulation</span></a></li></ul></li><li><a class="tocitem" href="../nj/">Neighbour Joining</a></li></ul></li><li><span class="tocitem">Library</span><ul><li><a class="tocitem" href="../../lib/public/">Public</a></li><li><a class="tocitem" href="../../lib/internals/">Internals</a></li></ul></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">Manual</a></li><li class="is-active"><a href>Discrete Trait Evolution</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Discrete Trait Evolution</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/crsl4/PhyloNetworks.jl/blob/master/docs/src/man/fitDiscrete.md" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="Discrete-Trait-Evolution"><a class="docs-heading-anchor" href="#Discrete-Trait-Evolution">Discrete Trait Evolution</a><a id="Discrete-Trait-Evolution-1"></a><a class="docs-heading-anchor-permalink" href="#Discrete-Trait-Evolution" title="Permalink"></a></h1><p>With a phylogenetic network structure inferred, we can now estimate how quickly traits have evolved over time using a likelihood model. These traits should be discrete characteristics of a species such as feather color, diet type, or DNA in aligned genetic sequences.</p><h2 id="Discrete-trait-data"><a class="docs-heading-anchor" href="#Discrete-trait-data">Discrete trait data</a><a id="Discrete-trait-data-1"></a><a class="docs-heading-anchor-permalink" href="#Discrete-trait-data" title="Permalink"></a></h2><p>As with continuous trait evolution, we assume a fixed network, correctly rooted, with branch lengths proportional to calendar time. We start with a network, then add data about the tips of this network.</p><p>The simplest way is to use a vector of species names with a data frame of traits:</p><pre><code class="language-julia-repl">julia&gt; # read in network
+       net = readTopology(&quot;(O:4,(A:3,((B:0.4)#H1:1.6::0.92,((C:0.4,#H1:0::0.08):0.6,(D:.2,E:.2):0.8):1):1):1);&quot;);
+
+julia&gt; # read in trait data
+       species = [&quot;C&quot;,&quot;A&quot;,&quot;D&quot;,&quot;B&quot;,&quot;O&quot;,&quot;E&quot;];
+
+julia&gt; dat = DataFrame(trait=[&quot;hi&quot;,&quot;lo&quot;,&quot;lo&quot;,&quot;hi&quot;,&quot;lo&quot;,&quot;lo&quot;])
+6×1 DataFrame
+ Row │ trait
+     │ String
+─────┼────────
+   1 │ hi
+   2 │ lo
+   3 │ lo
+   4 │ hi
+   5 │ lo
+   6 │ lo</code></pre><p>If your species names and trait data are in the same data frame, read in your data frame then subset the data like this:</p><pre><code class="language-julia">dat = DataFrame(species=[&quot;C&quot;,&quot;A&quot;,&quot;D&quot;,&quot;B&quot;,&quot;O&quot;,&quot;E&quot;], trait=[&quot;hi&quot;,&quot;lo&quot;,&quot;lo&quot;,&quot;hi&quot;,&quot;lo&quot;,&quot;lo&quot;]);
+species = dat.species # or: dat[!, :species]
+select!(dat, Not(:species)) # select all columns except for :species; modifies dat in place</code></pre><p>Let&#39;s plot the network and map the data onto it:</p><pre><code class="language-julia">using RCall, PhyloPlots
+R&quot;par&quot;(mar=[0,0,0,0]); # to reduce margins
+res = plot(net, :R; tipOffset=0.3); # the results &quot;res&quot; provides point coordinates, to use for data annotation
+o = [findfirst(isequal(tax), species) for tax in tipLabels(net)] # 5,2,4,1,3,6: order to match taxa from &quot;species&quot; to tip labels
+isequal(species[o], tipLabels(net)) # true :)
+traitcolor = map(x -&gt; (x==&quot;lo&quot; ? &quot;grey&quot; : &quot;red&quot;), dat.trait[o])
+leaves = res[13][!,:lea]
+R&quot;points&quot;(x=res[13][leaves,:x] .+0.1, y=res[13][leaves,:y], pch=16, col=traitcolor, cex=1.5); # adds grey &amp; red points
+R&quot;legend&quot;(x=1, y=2, legend=[&quot;hi&quot;,&quot;lo&quot;], pch=16, col=[&quot;red&quot;,&quot;grey&quot;],
+          title=&quot;my trait&quot;, bty=&quot;n&quot;,var&quot;title.adj&quot;=0);
+# next: add arrow to show gene flow edge, and proportion γ of genes affected
+hi = findfirst([!e.isMajor for e in net.edge]) # 6 : &quot;h&quot;ybrid &quot;i&quot;ndex: index of gene flow edge (minor hybrid) in net
+(hx1, hx2, hy1, hy2) = (res[i][hi] for i in 9:12); # coordinates for minor hybrid edge; 1=start, 2=end
+R&quot;arrows&quot;(hx1, hy1, hx2, hy2, col=&quot;deepskyblue&quot;, length=0.08, angle=20); # adds the arrow
+R&quot;text&quot;(res[14][hi,:x]-0.2, res[14][hi,:y]+0.1, res[14][hi,:gam], col=&quot;deepskyblue&quot;, cex=0.75); # add the γ value</code></pre><p><img src="../../assets/figures/fitdiscrete_trait_net_1.svg" alt="net_1"/></p><h2 id="Substitution-models"><a class="docs-heading-anchor" href="#Substitution-models">Substitution models</a><a id="Substitution-models-1"></a><a class="docs-heading-anchor-permalink" href="#Substitution-models" title="Permalink"></a></h2><p>After reading in your data, choose a model to describe how evolutionary changes (or substitutions, in the case of DNA) happened over time. Available Markov substitution models are described below.</p><p>For general trait types, use one of these three models:</p><ul><li><code>:BTSM</code> Binary Trait Substitution Model (2 states, rates unconstrained)</li><li><code>:ERSM</code> Equal Rates Substitution Model (<code>k</code> states, all transitions possible with equal rates)</li><li><code>:TBTSM</code> Two Binary Trait Substitution Model (though not fully implemented yet)</li></ul><h2 id="Inference"><a class="docs-heading-anchor" href="#Inference">Inference</a><a id="Inference-1"></a><a class="docs-heading-anchor-permalink" href="#Inference" title="Permalink"></a></h2><p>To infer evolutionary rates, run <a href="../../lib/public/#PhyloNetworks.fitdiscrete"><code>fitdiscrete</code></a> on the network and data. It will calculate the maximum likelihood score of one or more discrete trait characters at the tips on a fixed network.</p><ul><li>Along each edge, evolutionary changes are modeled with a continous time Markov model.</li><li>At a hybrid node, the trait is assumed to be inherited from one or the other of its parents (immediately before the reticulation event), with probabilities equal to the inheritance γ of each parent edge, which is given by the network.</li><li>At the root of the network, a uniform distribution among the possible states is assumed a priori.</li><li>The model ignores incomplete lineage sorting (e.g. hemiplasy).</li></ul><h3 id="parameter-estimation-and-model-fit"><a class="docs-heading-anchor" href="#parameter-estimation-and-model-fit">parameter estimation &amp; model fit</a><a id="parameter-estimation-and-model-fit-1"></a><a class="docs-heading-anchor-permalink" href="#parameter-estimation-and-model-fit" title="Permalink"></a></h3><p>The example below if for a binary trait, first using a model assuming equal rates (from <code>lo</code> to <code>hi</code> and from <code>hi</code> to <code>lo</code>); then using a model allowing for distinct rates. The option <code>optimizeQ=false</code> causes transition rates to stay at their starting values, without being optimized.</p><pre><code class="language-julia-repl">julia&gt; s1 = fitdiscrete(net, :ERSM, species, dat; optimizeQ=false)
+PhyloNetworks.StatisticalSubstitutionModel:
+Equal Rates Substitution Model with k=2,
+  all rates equal to α=0.07042.
+  rate matrix Q:
+                hi      lo
+        hi       *  0.0704
+        lo  0.0704       *
+on a network with 1 reticulations
+data:
+  6 species
+  1 trait
+log-likelihood: -5.38599
+
+julia&gt; s2 = fitdiscrete(net, :BTSM, species, dat; optimizeQ=false)
+PhyloNetworks.StatisticalSubstitutionModel:
+Binary Trait Substitution Model:
+  rate hi→lo α=0.07042
+  rate lo→hi β=0.07042
+on a network with 1 reticulations
+data:
+  6 species
+  1 trait
+log-likelihood: -5.38599</code></pre><p>The default rates, which act as starting value if rates were to be optimized, are chosen equal to the inverse of the total edge lengths in the network (or 1/ntax if all branch lengths are missing).</p><p>By default <code>optimizeQ = true</code>, such that <a href="../../lib/public/#PhyloNetworks.fitdiscrete"><code>fitdiscrete</code></a> estimates the parameters of the rate matrix Q.</p><pre><code class="language-julia-repl">julia&gt; s3 = fitdiscrete(net, :ERSM, species, dat)
+PhyloNetworks.StatisticalSubstitutionModel:
+Equal Rates Substitution Model with k=2,
+  all rates equal to α=0.70216.
+  rate matrix Q:
+                hi      lo
+        hi       *  0.7022
+        lo  0.7022       *
+on a network with 1 reticulations
+data:
+  6 species
+  1 trait
+log-likelihood: -3.76738
+
+julia&gt; s4 = fitdiscrete(net, :BTSM, species, dat)
+PhyloNetworks.StatisticalSubstitutionModel:
+Binary Trait Substitution Model:
+  rate hi→lo α=0.96783
+  rate lo→hi β=0.55896
+on a network with 1 reticulations
+data:
+  6 species
+  1 trait
+log-likelihood: -3.58702</code></pre><p>To compare the two models, we can use the Akaike criterion.</p><pre><code class="language-julia-repl">julia&gt; using StatsBase
+
+julia&gt; aic(s3)
+9.534758444197102
+
+julia&gt; aic(s4)
+11.174046169879334</code></pre><p>Here, the equal-rate model is slightly favored (lower AIC), so we will use <code>s3</code> below.</p><h3 id="ancestral-state-prediction"><a class="docs-heading-anchor" href="#ancestral-state-prediction">ancestral state prediction</a><a id="ancestral-state-prediction-1"></a><a class="docs-heading-anchor-permalink" href="#ancestral-state-prediction" title="Permalink"></a></h3><p>This is traditionally called &quot;ancestral state reconstruction&quot;, but we do not actually reconstruct anything. We make predictions for (past of present-day) values, hopefully with some measure to quantify our uncertainty.</p><pre><code class="language-julia-repl">julia&gt; # show(ancestralStateReconstruction(s3), allrows=true)
+       ancestralStateReconstruction(s3)
+13×4 DataFrame
+ Row │ nodenumber  nodelabel  hi         lo
+     │ Int64       String     Float64    Float64
+─────┼────────────────────────────────────────────
+   1 │          1  O          0.0        1.0
+   2 │          2  A          0.0        1.0
+   3 │          3  B          1.0        0.0
+   4 │          4  C          1.0        0.0
+   5 │          5  D          0.0        1.0
+   6 │          6  E          0.0        1.0
+   7 │          7  7          0.497566   0.502434
+   8 │          8  8          0.497042   0.502958
+   9 │          9  9          0.517993   0.482007
+  10 │         10  10         0.476645   0.523355
+  11 │         11  11         0.0226845  0.977316
+  12 │         12  12         0.755186   0.244814
+  13 │         13  H1         0.796886   0.203114</code></pre><p>Rows 1-6 correspond to the tips, with known values. We see much prediction uncertainty at most of the internal nodes. To see where these internal nodes (7-13/H1) are, we need to look at the network stored within the fitted model. This network might differ somewhat from the input network in case taxa with missing data where pruned, and with edges possibly renumbered.</p><pre><code class="language-julia">plot(s3.net, :R, showNodeNumber=true, showIntNodeLabel=true, tipOffset=0.2);</code></pre><p><img src="../../assets/figures/fitdiscrete_trait_net_2.svg" alt="net_2"/></p><p>Looking back at the posterior probabilities of states &quot;hi&quot; and &quot;lo&quot; at each node from the ancestral &#39;prediction&#39; table above, we see that there is more uncertainty near the root, and less uncertainty near the tips. The most recent common ancestor of D and E (node 11), in particular, is predicted to be &quot;lo&quot; with fairly high certainty.</p><h3 id="impact-of-gene-flow-on-the-trait"><a class="docs-heading-anchor" href="#impact-of-gene-flow-on-the-trait">impact of gene flow on the trait</a><a id="impact-of-gene-flow-on-the-trait-1"></a><a class="docs-heading-anchor-permalink" href="#impact-of-gene-flow-on-the-trait" title="Permalink"></a></h3><p>An interesting question is whether there is evidence that B obtained it&#39;s &quot;hi&quot; state via gene flow. The prior probability for this is γ: the supposedly known proportion of genes inherited via gene flow, which is part of the network (along with branch lengths). Here, this prior probability of trait inheritance via gene flow is:</p><pre><code class="language-julia-repl">julia&gt; net.edge[6].gamma # the minor hybrid edge was edge 6, from above
+0.08</code></pre><p>We can compare this to the posterior probability, and get a Bayes factor to compare the two hypotheses: gene flow vs. vertical inheritance.</p><pre><code class="language-julia-repl">julia&gt; exp(s3.priorltw[1]) # prior: for vertical inheritance. &quot;ltw&quot; = log tree weight
+0.92
+
+julia&gt; exp(s3.priorltw[2]) # prior: for gene flow inheritance, same as γ above
+0.07999999999999999
+
+julia&gt; postltw = PhyloNetworks.posterior_logtreeweight(s3)
+2-element Vector{Float64}:
+ -0.10479264829852397
+ -2.3077104629296414
+
+julia&gt; exp(postltw[2])     # posterior: for gene flow inheritance
+0.09948877423615365
+
+julia&gt; function geneflowBF(fit)
+           postltw = PhyloNetworks.posterior_logtreeweight(fit)
+           exp(postltw[2] - postltw[1] + fit.priorltw[1] - fit.priorltw[2])
+       end
+geneflowBF (generic function with 1 method)
+
+julia&gt; geneflowBF(s3)
+1.2705237547097568</code></pre><p>We get a Bayes factor greater than 1, so there is more evidence that the &quot;hi&quot; value of B was inherited via gene flow, than via vertical inheritance. But the Bayes factor is just barely above 1, so the evidence is very equivocal. This may not be surprising given that gene flow occurred between fairly closely related species, and that the data set is very small.</p><h2 id="Trait-simulation"><a class="docs-heading-anchor" href="#Trait-simulation">Trait simulation</a><a id="Trait-simulation-1"></a><a class="docs-heading-anchor-permalink" href="#Trait-simulation" title="Permalink"></a></h2><p><a href="../../lib/public/#PhyloNetworks.randomTrait"><code>randomTrait</code></a> can simulate traits along a known network. For example, we can define a binary trait model with states &quot;carnivory&quot; (state 1) and &quot;non-carnivory&quot; (state 2), then ask for a trait to be simulated along our network. We can ask for 3 independent simulations, giving us 3 traits then, arranged in 3 rows.</p><pre><code class="language-julia-repl">julia&gt; m1 = BinaryTraitSubstitutionModel(1.0,2.0, [&quot;carnivory&quot;, &quot;non-carnivory&quot;])
+Binary Trait Substitution Model:
+rate carnivory→non-carnivory α=1.0
+rate non-carnivory→carnivory β=2.0
+
+julia&gt; using Random; Random.seed!(1234); # for reproducibility of this example
+
+julia&gt; traitmatrix, nodecolumn = randomTrait(m1, net; ntraits=3);
+
+julia&gt; traitmatrix
+3×13 Matrix{Int64}:
+ 1  1  1  1  2  2  2  1  1  2  1  1  1
+ 2  1  1  1  1  1  2  1  1  1  1  1  2
+ 2  2  1  2  2  1  2  1  1  1  1  1  1</code></pre><p>In this trait matrix, each column corresponds to a node, each row is a trait, and each entry gives the state of that trait for that node, as an index. To get the state labels:</p><pre><code class="language-julia-repl">julia&gt; m1.label[traitmatrix]
+3×13 Matrix{String}:
+ &quot;carnivory&quot;      &quot;carnivory&quot;      …  &quot;carnivory&quot;  &quot;carnivory&quot;
+ &quot;non-carnivory&quot;  &quot;carnivory&quot;         &quot;carnivory&quot;  &quot;non-carnivory&quot;
+ &quot;non-carnivory&quot;  &quot;non-carnivory&quot;     &quot;carnivory&quot;  &quot;carnivory&quot;</code></pre><p>The <code>nodecolumn</code> vector says which node corresponds to which column in the trait matrix, and we can compare to the node numbers in the network. For example, the first column corresponds to node <code>-2</code>, which is the root. (The root is always in the first column: that&#39;s where the simulation starts.) Also, as an example, the column for taxon &quot;A&quot; is column 12:</p><pre><code class="language-julia-repl">julia&gt; nodecolumn
+13-element Vector{String}:
+ &quot;-2&quot;
+ &quot;-3&quot;
+ &quot;-4&quot;
+ &quot;-6&quot;
+ &quot;-8&quot;
+ &quot;E&quot;
+ &quot;D&quot;
+ &quot;-7&quot;
+ &quot;H1&quot;
+ &quot;B&quot;
+ &quot;C&quot;
+ &quot;A&quot;
+ &quot;O&quot;
+
+julia&gt; net.node[net.root]
+PhyloNetworks.Node:
+ number:-2
+ attached to 2 edges, numbered: 1 13
+
+julia&gt; findfirst(isequal(&quot;A&quot;), nodecolumn)
+12
+
+julia&gt; nodecolumn[12]
+&quot;A&quot;
+
+julia&gt; traitmatrix[:,12]
+3-element Vector{Int64}:
+ 1
+ 1
+ 1
+
+julia&gt; m1.label[traitmatrix[:,12]]
+3-element Vector{String}:
+ &quot;carnivory&quot;
+ &quot;carnivory&quot;
+ &quot;carnivory&quot;</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../parsimony/">« Parsimony on networks</a><a class="docs-footer-nextpage" href="../nj/">Neighbour Joining »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Thursday 29 April 2021 22:28">Thursday 29 April 2021</span>. Using Julia version 1.6.1.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
