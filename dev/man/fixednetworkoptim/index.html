@@ -4,10 +4,10 @@
 julia&gt; net1alt = topologyMaxQPseudolik!(truenet, raxmlCF);
 
 julia&gt; writeTopology(net1alt, round=true)
-&quot;(D,C,(((A,B):0.984)#H1:7.643::0.72,((#H1:0.008::0.28,E):1.277,O):1.174):8.171);&quot;
+&quot;(D,C,(((A,B):0.843)#H1:6.976::0.769,((#H1:0.005::0.231,E):1.999,O):1.051):9.37);&quot;
 
 julia&gt; net1alt.loglik # pseudo deviance actually: the lower the better
-29.894966124051514</code></pre><pre><code class="language-julia">using PhyloPlots, RCall
+29.785803396816462</code></pre><pre><code class="language-julia">using PhyloPlots, RCall
 R&quot;par&quot;(mar=[0,0,0,0])
 plot(net1alt, :R, showGamma=true);</code></pre><p><img src="../../assets/figures/truenet_opt.svg" alt="truenet_opt"/></p><p>We get a score of 29.941, which is comparable to the score of the SNaQ network (net1: 28.315), especially compared to the score of the best tree (net0: 53.532). This begs the question: is the true network within the &quot;range&quot; of uncertainty? We can run a <a href="../bootstrap/#Bootstrap">Bootstrap</a> analysis to measure uncertainty in our network inference.</p><p>For a more thorough optimization, we may increase the requirements before the search stops (but the optimization will take longer). It makes no difference on this small data set.</p><pre><code class="language-julia">net1par = topologyMaxQPseudolik!(truenet, raxmlCF, ftolRel=1e-10, xtolAbs=1e-10)
 net1par.loglik # pseudo deviance, actually: the lower the better</code></pre><h2 id="Network-Score-with-no-optimization"><a class="docs-heading-anchor" href="#Network-Score-with-no-optimization">Network Score with no optimization</a><a id="Network-Score-with-no-optimization-1"></a><a class="docs-heading-anchor-permalink" href="#Network-Score-with-no-optimization" title="Permalink"></a></h2><p>For a network with given branch lengths and γ heritabilies, we can compute the pseudolikelihood (well, a pseudo-deviance) with:</p><pre><code class="language-julia-repl">julia&gt; topologyQPseudolik!(truenet,raxmlCF);
@@ -23,7 +23,7 @@ julia&gt; # or use the example file available with the package:
        file = joinpath(dirname(pathof(PhyloNetworks)), &quot;..&quot;,&quot;examples&quot;,&quot;net1.networks&quot;);
 
 julia&gt; netlist = readMultiTopology(file) # read the full list of networks in that file
-5-element Array{HybridNetwork,1}:
+5-element Vector{HybridNetwork}:
  HybridNetwork, Rooted Network
 12 edges
 12 nodes: 6 tips, 1 hybrid nodes, 5 internal tree nodes.
@@ -56,7 +56,7 @@ tip labels: C, D, B, A, ...
 &quot;28.31506721890958\n31.53556038078381\n56.6454831016146\n67.1777572749225\n199.1140196105714\n&quot;
 
 julia&gt; scores = parse.(Float64, split(scoresInString))
-5-element Array{Float64,1}:
+5-element Vector{Float64}:
   28.31506721890958
   31.53556038078381
   56.6454831016146
@@ -85,4 +85,4 @@ plot(netlist[2], :R, showGamma=true, tipOffset=0.1);
 R&quot;mtext&quot;(&quot;second best in list, score=31.5\nrequires unsampled population&quot;, line=-2);
 rootonedge!(netlist[2], 10) # net with modified direction: second way to make A outgroup
 plot(netlist[2], :R, showGamma=true, tipOffset=0.1);
-R&quot;mtext&quot;(&quot;second best in list, score=31.5\ndifferent root position&quot;, line=-2);</code></pre><p><img src="../../assets/figures/fixednetworkoptim_othernets2.svg" alt="othernets after reroot"/></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../dist_reroot/">« Network comparison and manipulation</a><a class="docs-footer-nextpage" href="../expectedCFs/">Extract Expected CFs »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Monday 26 April 2021 19:19">Monday 26 April 2021</span>. Using Julia version 1.5.4.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+R&quot;mtext&quot;(&quot;second best in list, score=31.5\ndifferent root position&quot;, line=-2);</code></pre><p><img src="../../assets/figures/fixednetworkoptim_othernets2.svg" alt="othernets after reroot"/></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../dist_reroot/">« Network comparison and manipulation</a><a class="docs-footer-nextpage" href="../expectedCFs/">Extract Expected CFs »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Thursday 29 April 2021 21:50">Thursday 29 April 2021</span>. Using Julia version 1.6.1.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>

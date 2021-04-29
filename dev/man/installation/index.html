@@ -4,7 +4,7 @@ Pkg.add(&quot;PhyloNetworks&quot;)</code></pre><p>The first step can take a few 
 Pkg.add(&quot;PhyloPlots&quot;)</code></pre><p>PhyloPlots depends on PhyloNetworks, and has further dependencies like <a href="http://gadflyjl.org/stable/">Gadfly</a> and <a href="https://github.com/JuliaInterop/RCall.jl">RCall</a></p><h2 id="Test-example"><a class="docs-heading-anchor" href="#Test-example">Test example</a><a id="Test-example-1"></a><a class="docs-heading-anchor-permalink" href="#Test-example" title="Permalink"></a></h2><p>To check that your installation worked, type this in Julia to load the package. This is something to type every time you start a Julia session:</p><pre><code class="language-julia">using PhyloNetworks;</code></pre><p>This step can also take a while, if Julia needs to pre-compile the code (after a package update for instance). Here is a very small test for the installation of PhyloNetworks.</p><pre><code class="language-julia-repl">julia&gt; net = readTopology(&quot;(A,(B,(C,D)));&quot;);
 
 julia&gt; tipLabels(net)
-4-element Array{String,1}:
+4-element Vector{String}:
  &quot;A&quot;
  &quot;B&quot;
  &quot;C&quot;
@@ -21,12 +21,12 @@ descriptive stat of input data printed to file summaryTreesQuartets.txt</code></
 DataCF</code></pre><p>which shows us that <code>raxmlCF</code> is of type <code>DataCF</code>. If we want to know about the attributes the object has, we can type <code>?</code> in Julia, followed by <code>DataCF</code> for a description. We can also ask for a list of all its attributes with</p><pre><code class="language-julia-repl">julia&gt; fieldnames(typeof(raxmlCF))
 (:quartet, :numQuartets, :tree, :numTrees, :repSpecies)</code></pre><p>For example, we see that one attribute is <code>numQuartets</code>: its the number of 4-taxon subsets in the data. To see what this number is:</p><pre><code class="language-julia-repl">julia&gt; raxmlCF.numQuartets
 15</code></pre><p>We also noticed an attribute <code>quartet</code>. It is a vector of Quartet objects inside <code>raxmlCF</code>, so</p><pre><code class="language-julia-repl">julia&gt; raxmlCF.quartet[2].taxon
-4-element Array{String,1}:
+4-element Vector{String}:
  &quot;A&quot;
  &quot;B&quot;
  &quot;C&quot;
  &quot;E&quot;</code></pre><p>will provide the list of taxon names for the second 4-taxon subset in the data. To see the observed CF, we can type</p><pre><code class="language-julia-repl">julia&gt; raxmlCF.quartet[2].obsCF
-3-element Array{Float64,1}:
+3-element Vector{Float64}:
  0.8333333333333334
  0.03333333333333333
  0.13333333333333333</code></pre><p>We can verify the type with</p><pre><code class="language-julia-repl">julia&gt; typeof(raxmlCF.quartet[2])
@@ -60,4 +60,4 @@ edge parent child  length  hybrid isMajor gamma   containRoot inCycle istIdentit
 8    -3     -5             false  true    1       true        -1      true 
 9    -2     -3             false  true    1       true        -1      true</code></pre><p>where 1 and 3 correspond to the position of the given edge to modify in the list of edges. We can only change the gamma value of hybrid edges (not tree edges). Such an attempt below will cause an error with a message to explain that the edge was a tree edge:</p><pre><code class="language-julia">setGamma!(net.edge[4],0.7)
 # should return this:
-# ERROR: cannot change gamma in a tree edge</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../../">« Home</a><a class="docs-footer-nextpage" href="../inputdata/">Input Data for SNaQ »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Monday 26 April 2021 19:19">Monday 26 April 2021</span>. Using Julia version 1.5.4.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+# ERROR: cannot change gamma in a tree edge</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../../">« Home</a><a class="docs-footer-nextpage" href="../inputdata/">Input Data for SNaQ »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Thursday 29 April 2021 21:50">Thursday 29 April 2021</span>. Using Julia version 1.6.1.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>

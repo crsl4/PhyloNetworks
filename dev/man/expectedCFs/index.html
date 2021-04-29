@@ -7,20 +7,20 @@ julia&gt; df_wide = fittedQuartetCF(raxmlCF) # same as fittedQuartetCF(raxmlCF, 
      │ String  String  String  String  Float64   Float64    Float64    Float64 ⋯
 ─────┼──────────────────────────────────────────────────────────────────────────
    1 │ A       B       C       D       1.0       0.0        0.0        0.99997 ⋯
-   2 │ A       B       C       E       0.833333  0.0333333  0.133333   0.83412
-   3 │ A       B       D       E       0.833333  0.0333333  0.133333   0.83412
-   4 │ A       C       D       E       0.0       0.0        1.0        7.11328
-   5 │ B       C       D       E       0.0       0.0        1.0        7.11328 ⋯
-   6 │ A       B       C       O       0.866667  0.0        0.133333   0.85914
-   7 │ A       B       D       O       0.866667  0.0        0.133333   0.85914
-   8 │ A       C       D       O       0.0       0.0        1.0        7.70934
-   9 │ B       C       D       O       0.0       0.0        1.0        7.70934 ⋯
-  10 │ A       B       E       O       0.833333  0.0666667  0.1        0.84378
-  11 │ A       C       E       O       0.533333  0.333333   0.133333   0.59810
-  12 │ B       C       E       O       0.666667  0.266667   0.0666667  0.59810
-  13 │ A       D       E       O       0.533333  0.333333   0.133333   0.59810 ⋯
-  14 │ B       D       E       O       0.666667  0.266667   0.0666667  0.59810
-  15 │ C       D       E       O       1.0       0.0        0.0        0.99994
+   2 │ A       B       C       E       0.833333  0.0333333  0.133333   0.83420
+   3 │ A       B       D       E       0.833333  0.0333333  0.133333   0.83420
+   4 │ A       C       D       E       0.0       0.0        1.0        2.2166e
+   5 │ B       C       D       E       0.0       0.0        1.0        2.2166e ⋯
+   6 │ A       B       C       O       0.866667  0.0        0.133333   0.86274
+   7 │ A       B       D       O       0.866667  0.0        0.133333   0.86274
+   8 │ A       C       D       O       0.0       0.0        1.0        2.41479
+   9 │ B       C       D       O       0.0       0.0        1.0        2.41479 ⋯
+  10 │ A       B       E       O       0.833333  0.0666667  0.1        0.83880
+  11 │ A       C       E       O       0.533333  0.333333   0.133333   0.60037
+  12 │ B       C       E       O       0.666667  0.266667   0.0666667  0.60037
+  13 │ A       D       E       O       0.533333  0.333333   0.133333   0.60037 ⋯
+  14 │ B       D       E       O       0.666667  0.266667   0.0666667  0.60037
+  15 │ C       D       E       O       1.0       0.0        0.0        0.99997
                                                                3 columns omitted
 
 julia&gt; df_long = fittedQuartetCF(raxmlCF, :long)
@@ -31,19 +31,19 @@ julia&gt; df_long = fittedQuartetCF(raxmlCF, :long)
    1 │ A       B       C       D       12_34    1.0        0.99997
    2 │ A       B       C       D       13_24    0.0        1.51333e-5
    3 │ A       B       C       D       14_23    0.0        1.51333e-5
-   4 │ A       B       C       E       12_34    0.833333   0.834121
-   5 │ A       B       C       E       13_24    0.0333333  0.0829396
-   6 │ A       B       C       E       14_23    0.133333   0.0829396
-   7 │ A       B       D       E       12_34    0.833333   0.834121
-   8 │ A       B       D       E       13_24    0.0333333  0.0829396
+   4 │ A       B       C       E       12_34    0.833333   0.834209
+   5 │ A       B       C       E       13_24    0.0333333  0.0828954
+   6 │ A       B       C       E       14_23    0.133333   0.0828954
+   7 │ A       B       D       E       12_34    0.833333   0.834209
+   8 │ A       B       D       E       13_24    0.0333333  0.0828954
   ⋮  │   ⋮       ⋮       ⋮       ⋮        ⋮         ⋮          ⋮
-  39 │ A       D       E       O       14_23    0.133333   0.0999508
-  40 │ B       D       E       O       12_34    0.666667   0.598109
-  41 │ B       D       E       O       13_24    0.266667   0.30194
-  42 │ B       D       E       O       14_23    0.0666667  0.0999508
-  43 │ C       D       E       O       12_34    1.0        0.999941
-  44 │ C       D       E       O       13_24    0.0        2.95099e-5
-  45 │ C       D       E       O       14_23    0.0        2.95099e-5
+  39 │ A       D       E       O       14_23    0.133333   0.100037
+  40 │ B       D       E       O       12_34    0.666667   0.60037
+  41 │ B       D       E       O       13_24    0.266667   0.299592
+  42 │ B       D       E       O       14_23    0.0666667  0.100037
+  43 │ C       D       E       O       12_34    1.0        0.99997
+  44 │ C       D       E       O       13_24    0.0        1.51333e-5
+  45 │ C       D       E       O       14_23    0.0        1.51333e-5
                                                        30 rows omitted</code></pre><p>It is important to have run <code>snaq!</code>, <code>topologyQPseudolik!</code> or <code>topologyMaxQPseudolik!</code> before making these tables, or the result would be meaningless. These functions update the fitted concordance factors (those expected under the network) inside the DataCF object <code>raxmlCF</code>.</p><p>Here is one way to plot them, via R again, and using the R package <code>ggplot2</code>.</p><pre><code class="language-julia">using RCall</code></pre><p>To install ggplot2 if not installed already, do: <code>R&quot;install.packages(&#39;ggplot2&#39;, dep=TRUE)&quot;</code></p><pre><code class="language-julia">@rlibrary ggplot2
 ggplot(df_long, aes(x=:obsCF,y=:expCF)) + theme_classic() +
     geom_segment(x=0,y=0,xend=1,yend=1, color=&quot;#008080&quot;, size=0.3) + # diagonal line
@@ -68,12 +68,12 @@ end</code></pre><pre><code class="language-julia-repl">julia&gt; first(df_long, 
    1 │ A       B       C       D       12_34    1.0        0.99997     yes
    2 │ A       B       C       D       13_24    0.0        1.51333e-5  yes
    3 │ A       B       C       D       14_23    0.0        1.51333e-5  yes
-   4 │ A       B       C       E       12_34    0.833333   0.834121    yes
-   5 │ A       B       C       E       13_24    0.0333333  0.0829396   yes
-   6 │ A       B       C       E       14_23    0.133333   0.0829396   yes
-   7 │ A       B       D       E       12_34    0.833333   0.834121    yes</code></pre><pre><code class="language-julia">ggplot(df_long, aes(x=:obsCF, y=:expCF, color=:has_A)) + theme_classic() +
+   4 │ A       B       C       E       12_34    0.833333   0.834209    yes
+   5 │ A       B       C       E       13_24    0.0333333  0.0828954   yes
+   6 │ A       B       C       E       14_23    0.133333   0.0828954   yes
+   7 │ A       B       D       E       12_34    0.833333   0.834209    yes</code></pre><pre><code class="language-julia">ggplot(df_long, aes(x=:obsCF, y=:expCF, color=:has_A)) + theme_classic() +
     geom_segment(x=0,y=0,xend=1,yend=1, color=&quot;black&quot;, size=0.3) + # diagonal line
     geom_point(alpha=0.5, position=position_jitter(width=0.005, height=0.005)) +
     ylab(&quot;quartet CF expected from network&quot;) + xlab(&quot;quartet CF observed in gene trees&quot;) + coord_equal(ratio=1);
 # can be saved:
-ggsave(&quot;expCFs_obsvsfitted_A.svg&quot;, width=6, height=5);</code></pre><p><img src="../../assets/figures/expCFs_obsvsfitted_A.svg" alt="obsvsfitted A present or not"/></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../fixednetworkoptim/">« Candidate Networks</a><a class="docs-footer-nextpage" href="../bootstrap/">Bootstrap »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Monday 26 April 2021 19:19">Monday 26 April 2021</span>. Using Julia version 1.5.4.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+ggsave(&quot;expCFs_obsvsfitted_A.svg&quot;, width=6, height=5);</code></pre><p><img src="../../assets/figures/expCFs_obsvsfitted_A.svg" alt="obsvsfitted A present or not"/></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../fixednetworkoptim/">« Candidate Networks</a><a class="docs-footer-nextpage" href="../bootstrap/">Bootstrap »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Thursday 29 April 2021 21:50">Thursday 29 April 2021</span>. Using Julia version 1.6.1.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
