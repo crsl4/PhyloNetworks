@@ -82,13 +82,13 @@
 </g>
 <g style="fill:rgb(0%,74.901961%,100%);fill-opacity:1;">
   <use xlink:href="#glyph1-1" x="379.617188" y="186.195312"/>
-  <use xlink:href="#glyph1-2" x="386.291016" y="186.195312"/>
-  <use xlink:href="#glyph1-3" x="389.625" y="186.195312"/>
+  <use xlink:href="#glyph1-2" x="386.617188" y="186.195312"/>
+  <use xlink:href="#glyph1-3" x="389.617188" y="186.195312"/>
 </g>
 <g style="fill:rgb(0%,40.784314%,54.509804%);fill-opacity:1;">
   <use xlink:href="#glyph1-1" x="336.328125" y="152.863281"/>
-  <use xlink:href="#glyph1-2" x="343.001953" y="152.863281"/>
-  <use xlink:href="#glyph1-4" x="346.335938" y="152.863281"/>
+  <use xlink:href="#glyph1-2" x="343.328125" y="152.863281"/>
+  <use xlink:href="#glyph1-4" x="346.328125" y="152.863281"/>
 </g>
 </g>
 </svg>
