@@ -568,6 +568,11 @@ netl3 = readTopology(level3string)
 @test isnothing(PhyloNetworks.fliphybrid!(netl3, netl3.hybrid[2]))
 # hybrid 3 = H2: can flip its minor parent but creates hybrid ladder
 #                cannot flip major parent: creates a cycle
+
+# when root must be moved but it cannot be the original hybrid node
+trickyrootnet = readTopology("(4:0.028549439384874944,((1:0.028914563433818073,((2:0.024136300971752945,(3:0.0)#H1:0.025248911082064646::0.8796149596027563):0.0)#H2:0.005720170209281829::0.9982670333221647):0.020303091738583207,(5:0.058669912247338814,(6:0.04122431297394082,#H2:0.11748476941614301::0.001732966677835242):0.04113540596688673):0.01095767892877917):0.01735023090983463,#H1:0.048168324466899::0.12038504039724372);")
+@test !isnothing(PhyloNetworks.fliphybrid!(trickyrootnet, trickyrootnet.hybrid[1]))
+@test trickyrootnet.root == 13
 end
 
 @testset "test fliphybrid! randomly choose node function" begin
@@ -581,3 +586,12 @@ net_W = readTopology("(C:0.0262,(B:0.0)#H2:0.03::0.9756,(((D:0.1,A:0.1274):0.0)#
 @test isnothing(PhyloNetworks.fliphybrid!(net_W, true, true)) # all minor edge flips create a hybridladder
 @test net_W.hybrid[1].number == 3 # unchanged
 end
+
+@testset "neighbor networks" begin
+truenet = readTopology("(((1:0.013635011856564799,2:0.013337412436279021):0.02379142358426221,((3:0.014458424150016028,4:0.015899483647102967):0.0)#H1:0.01602497696107314::0.7876602143873201):0.01491008237330521,(#H1:0.014834901504447811::0.2123397856126799,5:0.005527884554698987):0.055340371373774774,6:0.0620387315019168);")
+startingnet = readTopology("(((1:0.009221630571539522,2:0.01090284156388857):0.03072521643460218,(3:1.0e-8,(4:0.0)#H1:0.01133912873252381::0.7292558128341733):0.030320601757657505):0.013615526953203836,6:0.07418479480620778,(5:0.016527926411687346,#H1:1.0000000050247593e-8::0.2707441871658267):0.026214884034880433);")
+@test length(PhyloNetworks.nnineighbors(truenet, false, false)) == 40
+@test length(PhyloNetworks.uniqueneighbornets(truenet, true, true)) == 12
+@test length(PhyloNetworks.nnineighbors(startingnet, true, true)) == 44
+@test length(PhyloNetworks.uniqueneighbornets(startingnet, false, true)) == 18
+end # testset "neighbor networks"

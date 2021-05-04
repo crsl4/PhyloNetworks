@@ -352,7 +352,7 @@ estminor = minorTreeAt(estnet, 1); # (5:1.0,(3:1.0,4:1.0):1.069,(6:1.0,(1:1.0,2:
 # so the hybrid edge was estimated correctly!!
 rootatnode!(trunet, -8)
 @test hardwiredClusterDistance(estnet, trunet, true) == 3
-# next: testing hardwiredClusterDistance_unrooted, via the option rooted=false
+# next: testing hardwiredClusterDistance_semidirected, via the option rooted=false
 @test hardwiredClusterDistance(estnet, trunet, false) == 0
 h0est = readTopology("(((2:0.01,1:0.01):0.033,(3:0.0154,4:0.0149):0.0186):0.0113,6:0.0742,5:0.0465);")
 truenet = readTopology("((((1,2),((3,4))#H1),(#H1,5)),6);")
@@ -468,5 +468,16 @@ for i = 1:16
   @test hardwiredCluster(net5.edge[i], taxa) == m[:,i]
 end
 end # of testset, hardwiredCluster! on single nodes
+
+@testset "nni distance" begin
+startingnet = readTopology("(((1:0.009221630571539522,2:0.01090284156388857):0.03072521643460218,(3:1.0e-8,(4:0.0)#H1:0.01133912873252381::0.7292558128341733):0.030320601757657505):0.013615526953203836,6:0.07418479480620778,(5:0.016527926411687346,#H1:1.0000000050247593e-8::0.2707441871658267):0.026214884034880433);")
+truenet = readTopology("(((1:0.013635011856564799,2:0.013337412436279021):0.02379142358426221,((3:0.014458424150016028,4:0.015899483647102967):0.0)#H1:0.01602497696107314::0.7876602143873201):0.01491008237330521,(#H1:0.014834901504447811::0.2123397856126799,5:0.005527884554698987):0.055340371373774774,6:0.0620387315019168);")
+dist2net = readTopology("(((1:0.009221630571539522,2:0.01090284156388857):0.03072521643460218,(3:1.0e-8,(4:0.0)#H1:0.01133912873252381::0.7292558128341733):0.030320601757657505):0.013615526953203836,(6:0.07418479480620778,#H1:1.0000000050247593e-8::0.2707441871658267):0.026214884034880433,5:0.016527926411687346);")
+@test PhyloNetworks.nnidistance(startingnet, truenet, "6", true, true, 1) == 1
+@test PhyloNetworks.nnidistance(startingnet, truenet, "6", false, false, 1) == 1
+@test PhyloNetworks.nnidistance(truenet, truenet, "6", true, true, 1) == 0
+@test PhyloNetworks.nnidistance(dist2net, truenet, "6", true, true, 2) == 2
+@test PhyloNetworks.nnidistance(dist2net, truenet, "6", false, false, 1) == Inf
+end # nni distance
 
 end

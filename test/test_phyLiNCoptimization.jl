@@ -271,7 +271,7 @@ obj = @test_nowarn PhyloNetworks.phyLiNC(net, fastasimple, :JC69, :G, 2; maxhybr
 net = readTopology("(((A:2.0,(B:1.0)#H1:0.1::0.9):1.5,(C:0.6,#H1:1.0::0.1):1.0):0.5,D:2.0);");
 obj = @test_nowarn PhyloNetworks.phyLiNC(net, fastasimple, :HKY85; maxhybrid=2,
                     no3cycle=true, nohybridladder=true, maxmoves=2, probST=1.0, # not enough moves to get back to a good topology
-                    nreject=1, nruns=1, filename="phyLiNC2", verbose=false, seed=0)
+                    nreject=1, nruns=1, filename="phyLiNC2", verbose=false, seed=5)
 @test obj.loglik > -24.21
 @test read("phyLiNC2.err", String) == ""
 @test startswith(read("phyLiNC2.log", String), "PhyLiNC network estimation starting")
@@ -386,4 +386,11 @@ lcache = PhyloNetworks.CacheLengthLiNC(obj, 1e-6,1e-6,1e-2,1e-3, 5);
 @test obj.loglik ≈ -28.30294 atol=.01
 @test !PhyloNetworks.fliphybridedgeLiNC!(obj, obj.loglik, false, emptyconstraint, 1e-6, γcache, lcache)
 end # hybrid flip basics
+
+@testset "fixed network optimization" begin
+net = readTopology("(#H2:0.02495259889870113::0.0244,((C:1e-4,((B:0.0)#H1:0.0::0.6)#H2:0.034190897863530335::0.9756):0.24434924848805456,(#H1:0.01539513240840275::0.4,A:0.2864250860992079):1.0e-8):1e-4,D:0.2716998373895161);")
+obj = PhyloNetworks.phyLiNC_fixednetwork(net, fastasimple, :HKY85, :Inv, false, "", 543)
+@test obj.loglik ≈ -23.38354 atol=.0001
+end # fixed network optimization
+
 end # of overall phyLiNC test set
