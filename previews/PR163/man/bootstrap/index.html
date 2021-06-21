@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Bootstrap · PhyloNetworks.jl</title><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.11.1/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><a class="docs-logo" href="../../"><img src="../../assets/logo.png" alt="PhyloNetworks.jl logo"/></a><div class="docs-package-name"><span class="docs-autofit">PhyloNetworks.jl</span></div><form class="docs-search" action="../../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../../">Home</a></li><li><span class="tocitem">Manual</span><ul><li><a class="tocitem" href="../installation/">Installation</a></li><li><a class="tocitem" href="../inputdata/">Input Data for SNaQ</a></li><li><a class="tocitem" href="../ticr_howtogetQuartetCFs/">TICR pipeline</a></li><li><a class="tocitem" href="../snaq_plot/">Network estimation and display</a></li><li><a class="tocitem" href="../dist_reroot/">Network comparison and manipulation</a></li><li><a class="tocitem" href="../fixednetworkoptim/">Candidate Networks</a></li><li><a class="tocitem" href="../expectedCFs/">Extract Expected CFs</a></li><li class="is-active"><a class="tocitem" href>Bootstrap</a><ul class="internal"><li><a class="tocitem" href="#Running-a-bootstrap-analysis"><span>Running a bootstrap analysis</span></a></li><li><a class="tocitem" href="#support-for-tree-edges"><span>support for tree edges</span></a></li><li><a class="tocitem" href="#support-for-hybrid-edges-and-hybrid-nodes"><span>support for hybrid edges and hybrid nodes</span></a></li></ul></li><li><a class="tocitem" href="../multiplealleles/">Multiple Alleles</a></li><li><a class="tocitem" href="../trait_tree/">Continuous Trait Evolution</a></li><li><a class="tocitem" href="../parsimony/">Parsimony on networks</a></li><li><a class="tocitem" href="../fitDiscrete/">Discrete Trait Evolution</a></li><li><a class="tocitem" href="../nj/">Neighbour Joining</a></li></ul></li><li><span class="tocitem">Library</span><ul><li><a class="tocitem" href="../../lib/public/">Public</a></li><li><a class="tocitem" href="../../lib/internals/">Internals</a></li></ul></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">Manual</a></li><li class="is-active"><a href>Bootstrap</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Bootstrap</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/crsl4/PhyloNetworks.jl/blob/master/docs/src/man/bootstrap.md" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="Bootstrap"><a class="docs-heading-anchor" href="#Bootstrap">Bootstrap</a><a id="Bootstrap-1"></a><a class="docs-heading-anchor-permalink" href="#Bootstrap" title="Permalink"></a></h1><h2 id="Running-a-bootstrap-analysis"><a class="docs-heading-anchor" href="#Running-a-bootstrap-analysis">Running a bootstrap analysis</a><a id="Running-a-bootstrap-analysis-1"></a><a class="docs-heading-anchor-permalink" href="#Running-a-bootstrap-analysis" title="Permalink"></a></h2><p>There are two ways to do a bootstrap analysis.</p><ul><li>From quartet CFs with credibility intervals, such as if we used BUCKy. The <a href="../ticr_howtogetQuartetCFs/#TICR-pipeline">TICR pipeline</a> outputs a CF table with extra columns for credibility intervals. We could then read that table and get bootstrap networks like this, and tweak options as needed:</li></ul><pre><code class="language-julia">using DataFrames, CSV
+df = DataFrame(CSV.File(&quot;tableCF_withCI.csv&quot;); copycols = false)
+bootnet = bootsnaq(startnetwork, df, hmax=1, filename=&quot;bootstrap&quot;)</code></pre><ul><li>Alternatively, we can use bootstrap gene trees: one file of bootstrap trees per gene. Here, the input is a text file that lists all the bootstrap files (one per gene). We demonstrate this option here.</li></ul><p>The names of all our bootstrap files are listed in &quot;BSlistfiles&quot;. (ASTRAL can use the same file to do its own bootstrap, see the <a href="https://github.com/crsl4/PhyloNetworks.jl/wiki/Gene-Trees:-RAxML">wiki</a> for more details). The function <code>readBootstrapTrees</code> can read this list of file names, then read each bootstrap file to get the bootstrap sample for each gene. We can use them to sample input gene trees at random, one per gene, and estimate a network from them. We ask the <code>bootsnaq</code> function to repeat this resampling of bootstrap gene trees several times.</p><pre><code class="language-julia">bootTrees = readBootstrapTrees(&quot;BSlistfiles&quot;);
+bootnet = bootsnaq(net0, bootTrees, hmax=1, nrep=10, runs=3,
+                   filename=&quot;bootsnaq&quot;, seed=4321)</code></pre><p>The bootstrap networks are saved in the <code>boostrap.out</code> file, so they can be read in a new session with <code>bootnet = readMultiTopology(&quot;bootsnap.out&quot;)</code>. To save the bootstrap networks to a different file (perhaps after having re-rooted them with an outgroup), we could do this: <code>writeMultiTopology(bootnet, &quot;bootstrapNets.tre&quot;)</code>.</p><p>The example above asks for 10 bootstrap replicates, which is definitely too few, to make the example run faster. We might also increase the number of optimization runs (<code>runs</code>) done for each bootstrap replicate. This bootstrap was run with the default 10 runs per replicate, and 100 bootstrap replicates, and the 100 bootstrap networks come with the package:</p><pre><code class="language-julia">bootnet = readMultiTopology(joinpath(dirname(pathof(PhyloNetworks)), &quot;..&quot;,&quot;examples&quot;,&quot;bootsnaq.out&quot;));
+length(bootnet)</code></pre><pre class="documenter-example-output">100</pre><p>If we used a specified list of quartets on the original data, we should use that same list for the bootstrap analysis through the option <code>quartetfile</code>.</p><h2 id="support-for-tree-edges"><a class="docs-heading-anchor" href="#support-for-tree-edges">support for tree edges</a><a id="support-for-tree-edges-1"></a><a class="docs-heading-anchor-permalink" href="#support-for-tree-edges" title="Permalink"></a></h2><p>Now that we have 100 bootstrap networks, we need to summarize what they have in common (highly supported features) and what they don&#39;t (areas of uncertainty).</p><p>Before summarizing these bootstrap networks on the best network, it is best to re-read this network to get a reproducible internal numbering of its nodes and edges, used later for mapping bootstrap support to edges.</p><pre><code class="language-julia">net1 = readTopology(joinpath(dirname(pathof(PhyloNetworks)), &quot;..&quot;,&quot;examples&quot;,&quot;net1.out&quot;))</code></pre><pre class="documenter-example-output">HybridNetwork, Rooted Network
+12 edges
+12 nodes: 6 tips, 1 hybrid nodes, 5 internal tree nodes.
+tip labels: C, D, O, E, ...
+(C,D,((O,(E,#H7:::0.196):0.314):0.664,(B,(A)#H7:::0.804):10.0):10.0);
+</pre><p>It turns out that the direction of gene flow is quite uncertain in this example (see below) with a wrong direction inferred sometimes, so we re-root our best network net1 to the base of O,E, for the figures to be less confusing later.</p><pre><code class="language-julia">using PhyloPlots, RCall
+plot(net1, :R, showEdgeNumber=true); # edge 7 leads to O+E
+rootonedge!(net1, 7) # makes (O,E) outgroup clade
+plot(net1, :R, showNodeNumber=true);</code></pre><p><img src="../../assets/figures/net1_rotate1_1.svg" alt="net1_rotate1 1"/> <img src="../../assets/figures/net1_rotate1_2.svg" alt="net1_rotate1 2"/></p><p>Edges cross: but rotating at node -6 should remove this crossing of edges</p><pre><code class="language-julia">rotate!(net1, -6)</code></pre><pre><code class="language-julia">plot(net1, :R, showGamma=true);</code></pre><p><img src="../../assets/figures/net1_rotate2.svg" alt="net1_rotate2"/></p><p>We can now summarize our bootstrap networks. The functions <code>treeEdgesBootstrap</code> and <code>hybridBootstrapSupport</code> read all bootstrap networks and map the edges / nodes onto a reference network: here net1.</p><pre><code class="language-julia">BSe_tree, tree1 = treeEdgesBootstrap(bootnet,net1);</code></pre><pre class="documenter-example-output">(3×2 DataFrame
+ Row │ edgeNumber  proportion
+     │ Int64       Float64
+─────┼────────────────────────
+   1 │         13       100.0
+   2 │         11       100.0
+   3 │         12       100.0, HybridNetwork, Rooted Network
+10 edges
+11 nodes: 6 tips, 0 hybrid nodes, 5 internal tree nodes.
+tip labels: C, D, O, E, ...
+((O,E):0.166,((B,A):10.0,(C,D):10.0):0.498);
+)</pre><p>This calculates the major tree <code>tree1</code> displayed in <code>net1</code>, that is, the tree obtained by following the major parent (γ&gt;0.5) of each hybrid node. This tree can be visualized like this, with edge numbers shown for later use.</p><pre><code class="language-julia">plot(tree1, :R, showEdgeNumber=true);</code></pre><p><img src="../../assets/figures/major_tree.svg" alt="major_tree"/></p><p>Next, we can look at bootstrap table <code>BSe_tree</code>, which has one row for each tree edge in <code>net1</code>. One column contains the edge number (same as shown in the plot) and another column contains the edge bootstrap support: the proportion of bootstrap replicates in which this edge was found in the major tree of the inferred network. We can see the full bootstrap table and see which tree edges have bootstrap support lower than 100% (none here) with</p><pre><code class="language-julia-repl">julia&gt; using DataFrames # for showall() below
+
+julia&gt; show(BSe_tree, allrows=true, allcols=true)
+3×2 DataFrame
+ Row │ edgeNumber  proportion
+     │ Int64       Float64
+─────┼────────────────────────
+   1 │         13       100.0
+   2 │         11       100.0
+   3 │         12       100.0
+julia&gt; filter(row -&gt; row[:proportion] &lt; 100, BSe_tree)
+0×2 DataFrame</code></pre><p>Finally, we can map the bootstrap proportions onto the network or its main tree by passing the bootstrap table to the <code>edgeLabel</code> option of <code>plot</code>:</p><pre><code class="language-julia">plot(tree1, :R, edgeLabel=BSe_tree);
+plot(net1, :R, edgeLabel=BSe_tree);</code></pre><p><img src="../../assets/figures/boot_tree_net_1.svg" alt="boot_tree_net 1"/> <img src="../../assets/figures/boot_tree_net_2.svg" alt="boot_tree_net 2"/></p><p>(Here, it is important that the numbers assigned to edges when building the boostrap table –those in <code>net1</code> at the time– correspond to the current edge numbers in <code>tree1</code> and <code>net1</code>. That was the purpose of reading the network from the output file of <code>snaq!</code> earlier, for consistency across different Julia sessions.)</p><p>If we wanted to plot only certain bootstrap values, like those below 100% (1.0), we could do this:</p><pre><code class="language-julia">plot(net1, :R, edgeLabel=filter(row -&gt; row[:proportion] &lt; 100, BSe_tree));</code></pre><h2 id="support-for-hybrid-edges-and-hybrid-nodes"><a class="docs-heading-anchor" href="#support-for-hybrid-edges-and-hybrid-nodes">support for hybrid edges and hybrid nodes</a><a id="support-for-hybrid-edges-and-hybrid-nodes-1"></a><a class="docs-heading-anchor-permalink" href="#support-for-hybrid-edges-and-hybrid-nodes" title="Permalink"></a></h2><p>Summarizing the placement of reticulations is not standard. The function <code>hybridBootstrapSupport</code> attempts to do so. The descendants of a given hybrid node form the &quot;recipient&quot; or &quot;hybrid&quot; clade, and is obtained after removing all other reticulations. If reticulation is due to gene flow or introgression, the minor hybrid edge (with γ&lt;0.5) represents this event. The descendants of the lineage from which gene flow originated is then a second &quot;sister&quot; of the hybrid clade. Because of the reticulation event, the hybrid clade has 2 sister clades, not 1: the major sister (through the major hybrid edge with γ&gt;0.5) and the minor sister (through the minor hybrid edge with γ&lt;0.5). Note that the network says <em>nothing</em> about the process: its shows the <em>relationships</em> only. We can calculate the frequency that each clade is a hybrid clade, or a major or minor sister for some other hybrid, in the bootstrap networks:</p><pre><code class="language-julia">BSn, BSe, BSc, BSgam, BSedgenum = hybridBootstrapSupport(bootnet, net1);</code></pre><pre class="documenter-example-output">(7×9 DataFrame
+ Row │ clade     node    hybridnode  edge    BS_hybrid  BS_sister  BS_major_si ⋯
+     │ String    Int64?  Int64?      Int64?  Float64    Float64    Float64     ⋯
+─────┼──────────────────────────────────────────────────────────────────────────
+   1 │ H7             7           5       9       33.0       51.0              ⋯
+   2 │ c_minus2      -2          -2      12        0.0       55.0
+   3 │ E              4           4       4       12.0       41.0
+   4 │ c_minus4      -4          -4       7       44.0        0.0
+   5 │ B              6           6       8        2.0       33.0              ⋯
+   6 │ c_minus6      -6          -6      11        9.0        7.0
+   7 │ O              3           3       3        0.0       13.0
+                                                               3 columns omitted, 12×8 DataFrame
+ Row │ edge     hybrid_clade  hybrid  sister_clade  sister  BS_hybrid_edge  BS ⋯
+     │ Int64?   String        Int64?  String        Int64?  Float64         Fl ⋯
+─────┼──────────────────────────────────────────────────────────────────────────
+   1 │      10  H7                 5  B                  6            33.0     ⋯
+   2 │       5  H7                 5  E                  4            32.0
+   3 │ missing  c_minus4          -4  c_minus2          -2            44.0
+   4 │ missing  c_minus4          -4  H7                 7            44.0
+   5 │ missing  E                  4  O                  3            12.0     ⋯
+   6 │ missing  c_minus6          -6  c_minus2          -2             9.0
+   7 │ missing  c_minus6          -6  E                  4             9.0
+   8 │ missing  E                  4  c_minus6          -6             7.0
+   9 │ missing  E                  4  H7                 7             5.0     ⋯
+  10 │ missing  B                  6  H7                 7             2.0
+  11 │ missing  B                  6  c_minus2          -2             2.0
+  12 │ missing  H7                 5  O                  3             1.0
+                                                               2 columns omitted, 6×8 DataFrame
+ Row │ taxa    O      E      c_minus4  B      H7     c_minus6  c_minus2
+     │ String  Bool   Bool   Bool      Bool   Bool   Bool      Bool
+─────┼──────────────────────────────────────────────────────────────────
+   1 │ C       false  false     false  false  false     false      true
+   2 │ D       false  false     false  false  false     false      true
+   3 │ O        true  false      true  false  false     false     false
+   4 │ E       false   true      true  false  false     false     false
+   5 │ B       false  false     false   true  false      true     false
+   6 │ A       false  false     false  false   true      true     false, [0.7678332804427751 0.2321667195572249; 0.0 0.0; … ; 0.8302741620426417 0.16972583795735827; 0.8140813408679294 0.18591865913207065], [10, 5])</pre><p>Let&#39;s look at the results. We can list all the clades and the percentage of bootstrap networks (bootstrap support) in which each clade is a hybrid or sister to a hybrid:</p><pre><code class="language-julia-repl">julia&gt; BSn
+7×9 DataFrame
+ Row │ clade     node    hybridnode  edge    BS_hybrid  BS_sister  BS_major_si ⋯
+     │ String    Int64?  Int64?      Int64?  Float64    Float64    Float64     ⋯
+─────┼──────────────────────────────────────────────────────────────────────────
+   1 │ H7             7           5       9       33.0       51.0              ⋯
+   2 │ c_minus2      -2          -2      12        0.0       55.0
+   3 │ E              4           4       4       12.0       41.0
+   4 │ c_minus4      -4          -4       7       44.0        0.0
+   5 │ B              6           6       8        2.0       33.0              ⋯
+   6 │ c_minus6      -6          -6      11        9.0        7.0
+   7 │ O              3           3       3        0.0       13.0
+                                                               3 columns omitted</code></pre><p>If a clade contains a single taxon, it is listed with its taxon name. The clade found in the best network is listed with its tag, starting with H (e.g. &quot;H7&quot;). The name of other clades start with &quot;c_&quot; followed by their number in the best network, if they do appear in the best network. The node numbers, as used internally in the best network, are listed in a separate column. They can be used later to display the bootstrap support values onto the network. Various columns give the bootstrap support that each clade is a hybrid, or a (major/minor) sister to a hybrid. The last column gives the bootstrap support for the full relationship in the best network: same hybrid with same two sisters. These bootstrap values are associated with nodes (or possibly, their parent edges).</p><p>To see what is the clade named &quot;H7&quot;, for instance:</p><pre><code class="language-julia-repl">julia&gt; BSc # this might be too big
+6×8 DataFrame
+ Row │ taxa    O      E      c_minus4  B      H7     c_minus6  c_minus2
+     │ String  Bool   Bool   Bool      Bool   Bool   Bool      Bool
+─────┼──────────────────────────────────────────────────────────────────
+   1 │ C       false  false     false  false  false     false      true
+   2 │ D       false  false     false  false  false     false      true
+   3 │ O        true  false      true  false  false     false     false
+   4 │ E       false   true      true  false  false     false     false
+   5 │ B       false  false     false   true  false      true     false
+   6 │ A       false  false     false  false   true      true     false
+
+julia&gt; show(BSc, allrows=true, allcols=true)
+6×8 DataFrame
+ Row │ taxa    O      E      c_minus4  B      H7     c_minus6  c_minus2
+     │ String  Bool   Bool   Bool      Bool   Bool   Bool      Bool
+─────┼──────────────────────────────────────────────────────────────────
+   1 │ C       false  false     false  false  false     false      true
+   2 │ D       false  false     false  false  false     false      true
+   3 │ O        true  false      true  false  false     false     false
+   4 │ E       false   true      true  false  false     false     false
+   5 │ B       false  false     false   true  false      true     false
+   6 │ A       false  false     false  false   true      true     false
+julia&gt; # BSc[BSc[!,:H7], :taxa] # just a different syntax to subset the data in the same way
+       filter(row -&gt; row[:H7], BSc).taxa
+1-element Vector{String}:
+ &quot;A&quot;</code></pre><p>We can also get bootstrap values associated with edges, to describe the support that a given hybrid clade has a given sister clade.</p><pre><code class="language-julia-repl">julia&gt; BSe
+12×8 DataFrame
+ Row │ edge     hybrid_clade  hybrid  sister_clade  sister  BS_hybrid_edge  BS ⋯
+     │ Int64?   String        Int64?  String        Int64?  Float64         Fl ⋯
+─────┼──────────────────────────────────────────────────────────────────────────
+   1 │      10  H7                 5  B                  6            33.0     ⋯
+   2 │       5  H7                 5  E                  4            32.0
+   3 │ missing  c_minus4          -4  c_minus2          -2            44.0
+   4 │ missing  c_minus4          -4  H7                 7            44.0
+   5 │ missing  E                  4  O                  3            12.0     ⋯
+   6 │ missing  c_minus6          -6  c_minus2          -2             9.0
+   7 │ missing  c_minus6          -6  E                  4             9.0
+   8 │ missing  E                  4  c_minus6          -6             7.0
+   9 │ missing  E                  4  H7                 7             5.0     ⋯
+  10 │ missing  B                  6  H7                 7             2.0
+  11 │ missing  B                  6  c_minus2          -2             2.0
+  12 │ missing  H7                 5  O                  3             1.0
+                                                               2 columns omitted</code></pre><p>Here, each row describes a pair of 2 clades: one being the hybrid, the other being its sister, connected by a hybrid edge. The first rows corresponds to hybrid edges in the best network. Other rows correspond to edges seen in bootstrap networks but not in the reference network.</p><pre><code class="language-julia-repl">julia&gt; BSedgenum
+2-element Vector{Int64}:
+ 10
+  5</code></pre><p>lists all the hybrid edges in the best network, two for each hybrid node: the major parent edge and then the minor parent edge. In our case, there is only one reticulation, so only 2 hybrid edges.</p><p>We can plot the bootstrap values of the 2 hybrid edges in the best network:</p><pre><code class="language-julia">plot(net1, :R, edgeLabel=BSe[!,[:edge,:BS_hybrid_edge]]);</code></pre><p><img src="../../assets/figures/boot_net_net.svg" alt="boot_net_net"/></p><p>This is showing the bootstrap support each hybrid edge: percentage of bootstrap trees with an edge from the same sister clade to the same hybrid clade. Alternatively, we could show the bootstrap support for the full reticulation relationships in the network, one at each hybrid node (support for same hybrid with same sister clades). Here, we find that A received gene flow from E (and is sister to B otherwise) in just 32% of bootstrap networks. In another 1% bootstrap, A received gene flow from another source.</p><pre><code class="language-julia">plot(net1, :R, nodeLabel=BSn[!,[:hybridnode,:BS_hybrid_samesisters]]);</code></pre><p><img src="../../assets/figures/boot_net_ret.svg" alt="boot_net_ret"/></p><p>Below is example code to place tree edge support and hybrid edge support on the same plot.</p><pre><code class="language-julia">tmp = filter(row -&gt; !ismissing(row[:edge]), BSe) # filter rows
+select!(tmp, [:edge,:BS_hybrid_edge])            # select 2 columns only
+rename!(tmp, :BS_hybrid_edge =&gt; :proportion)     # rename those columns, to match names in BSe_tree
+rename!(tmp, :edge =&gt; :edgeNumber)
+tmp = vcat(BSe_tree, tmp)
+plot(net1, edgeLabel=tmp, nodeLabel=BSn[!, [:hybridnode,:BS_hybrid_samesisters]])</code></pre><h3 id="Who-are-the-hybrids-in-bootstrap-networks?"><a class="docs-heading-anchor" href="#Who-are-the-hybrids-in-bootstrap-networks?">Who are the hybrids in bootstrap networks?</a><a id="Who-are-the-hybrids-in-bootstrap-networks?-1"></a><a class="docs-heading-anchor-permalink" href="#Who-are-the-hybrids-in-bootstrap-networks?" title="Permalink"></a></h3><p>On a different plot, we can show the bootstrap support for hybrid clades, first mapped to each node with positive hybrid support, and then mapped on the parent edge of these nodes. A is estimated as a hybrid in only 33% of our bootstrap networks. In another 44%, it is the lineage to (E,O) that is estimated as being of hybrid origin.</p><pre><code class="language-julia">plot(net1, :R, nodeLabel=filter(row-&gt;row[:BS_hybrid]&gt;0, BSn)[!,[:hybridnode,:BS_hybrid]]);
+plot(net1, :R, edgeLabel=filter(row-&gt;row[:BS_hybrid]&gt;0, BSn)[!,[:edge,:BS_hybrid]]);</code></pre><p><img src="../../assets/figures/boot_net_hyb_1.svg" alt="boot_net_hyb 1"/> <img src="../../assets/figures/boot_net_hyb_2.svg" alt="boot_net_hyb 2"/></p><h3 id="Where-is-the-origin-of-gene-flow?"><a class="docs-heading-anchor" href="#Where-is-the-origin-of-gene-flow?">Where is the origin of gene flow?</a><a id="Where-is-the-origin-of-gene-flow?-1"></a><a class="docs-heading-anchor-permalink" href="#Where-is-the-origin-of-gene-flow?" title="Permalink"></a></h3><p>We can plot the support for the various placements of the gene flow origin (minor sister clade), first mapped to each node with positive support for being the origin of gene flow, and then mapped along the parent edge of these nodes. We filtered clades to show those with sister support &gt; 5%:</p><pre><code class="language-julia">plot(net1, :R, nodeLabel=filter(r-&gt;r[:BS_minor_sister]&gt;5, BSn)[!,[:node,:BS_minor_sister]]);
+plot(net1, :R, edgeLabel=filter(r-&gt;r[:BS_minor_sister]&gt;5, BSn)[!,[:edge,:BS_minor_sister]]);</code></pre><p><img src="../../assets/figures/boot_net_clade_1.svg" alt="boot_net_clade 1"/> <img src="../../assets/figures/boot_net_clade_2.svg" alt="boot_net_clade 2"/></p><p>In our best network, the lineage to E is estimated as the origin of gene flow, but this is recovered in only 41% of our bootstrap networks. In another 49%, it is the lineage to A that is estimated as the <em>origin</em> of gene flow: so gene flow is estimated in the opposite direction. In this example, there is support for gene flow between (A,B) and (E,O), but there is much uncertainty about its exact placement and about its direction.</p><p>Mapping the support for major sister clades might be interesting too:</p><pre><code class="language-julia">plot(net1, nodeLabel=filter(r-&gt;r[:BS_major_sister]&gt;5, BSn)[!,[:node,:BS_major_sister]])</code></pre><p>The estimated heritability γ on hybrid edges in the reference network, when present in a bootstrap network, was also extracted:</p><pre><code class="language-julia-repl">julia&gt; BSgam[1:3,:] # first 3 rows only
+3×2 Matrix{Float64}:
+ 0.767833  0.232167
+ 0.0       0.0
+ 0.804412  0.195588</code></pre><p>γ=0 values are for bootstrap replicates that did not have the edge in their network. Basic summaries on γ values for a given edge, say the minor parent, could be obtained like this:</p><pre><code class="language-julia-repl">julia&gt; minimum(BSgam[:,2])
+0.0
+
+julia&gt; maximum(BSgam[:,2])
+0.2321667195572249
+
+julia&gt; using Statistics # for functions like mean and std (standard deviation)
+
+julia&gt; mean(BSgam[:,2])
+0.062201290198789325
+
+julia&gt; std(BSgam[:,2])
+0.09131993802196253</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../expectedCFs/">« Extract Expected CFs</a><a class="docs-footer-nextpage" href="../multiplealleles/">Multiple Alleles »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Monday 21 June 2021 02:35">Monday 21 June 2021</span>. Using Julia version 1.6.1.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
